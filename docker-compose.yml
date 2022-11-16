@@ -51,7 +51,16 @@ services:
       - DB_HOST=productdb
       - DB_NAME=dms_product
       - DB_ROOT_PASSWORD=password@12345#
-  
+
+  authenticationwebapi:
+    container_name: security-api
+    image: ${DOCKER_REGISTRY-}securityapi
+    build:
+      context: .
+      dockerfile: SecurityWebApi/Dockerfile
+    networks:
+      - backend
+
   orderdb:
     container_name: order-db
     image: mongo

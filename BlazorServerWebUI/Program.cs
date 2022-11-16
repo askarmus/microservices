@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://apigateway") });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://localhost:51258") });
 
 var app = builder.Build();
 
