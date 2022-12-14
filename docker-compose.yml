@@ -5,6 +5,19 @@ networks:
   frontend:
 
 services:
+
+  rabbitmq3:
+    container_name: "rabbitmq"
+    image: rabbitmq:3.8-management-alpine
+    environment:
+        - RABBITMQ_DEFAULT_USER=myuser
+        - RABBITMQ_DEFAULT_PASS=mypassword
+    ports:
+        # AMQP protocol port
+        - '5672:5672'
+        # HTTP management UI
+        - '15672:15672'
+
   customerdb:
     container_name: customer-db
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -52,7 +65,7 @@ services:
       - DB_NAME=dms_product
       - DB_ROOT_PASSWORD=password@12345#
 
-  authenticationwebapi:
+  securityapi:
     container_name: security-api
     image: ${DOCKER_REGISTRY-}securityapi
     build:

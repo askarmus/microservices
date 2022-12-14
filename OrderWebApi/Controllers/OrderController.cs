@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MassTransit;
+using MassTransit.Transports;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using OrderWebApi.Models;
+using Messaging;
 
 namespace OrderWebApi.Controllers
 {
@@ -10,9 +13,10 @@ namespace OrderWebApi.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IMongoCollection<Order> _orderCollection;
-
-        public OrderController()
+        private readonly ISendEndpointProvider _sendEndpointProvider;
+        public OrderController(ISendEndpointProvider sendEndpointProvider)
         {
+            _sendEndpointProvider = sendEndpointProvider;
             var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
             var dbName = Environment.GetEnvironmentVariable("DB_NAME");
             var connectionString = $"mongodb://{dbHost}:27017/{dbName}";
@@ -39,7 +43,16 @@ namespace OrderWebApi.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(Order order)
         {
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:" + BusConstants.StartOrderQueue));
+
             await _orderCollection.InsertOneAsync(order);
+
+            //await endpoint.Send<IStartOrder>(new
+            //{
+            //    OrderId = order.OrderId,
+            //});
+
+
             return Ok();
         }
 
